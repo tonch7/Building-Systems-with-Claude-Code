@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Clicbiz Ticket Master v1.0</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   CLICBIZ TICKET MASTER v1.0
+   Aesthetic: Mr. Robot · SIEM · Blue Team · Pentest
+   Fixed 500×700 — não redimensionável
+   ═══════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&display=swap');
+
+:root {
+  --bg0:       #04060d;
+  --bg1:       #070a14;
+  --bg2:       #0b0f1c;
+  --bg3:       #0e1222;
+  --panel:     #080c18;
+  --border:    rgba(0,180,255,.1);
+  --border2:   rgba(0,180,255,.22);
+  --border3:   rgba(0,200,255,.45);
+  --cyan:      #00d4f5;
+  --cyan2:     #00b4d8;
+  --cyan3:     rgba(0,212,245,.55);
+  --green:     #00e5a0;
+  --green2:    #00c47a;
+  --red:       #ff3d5a;
+  --warn:      #f0b429;
+  --ai:        #7c5cfc;
+  --ai2:       #a888ff;
+  --text:      #a8c8e0;
+  --text2:     #4a6a88;
+  --text3:     #243344;
+  --mono:      'Share Tech Mono', 'Courier New', monospace;
+  --ui:        'Rajdhani', sans-serif;
+  --glow-c:    0 0 8px rgba(0,212,245,.35);
+  --glow-g:    0 0 8px rgba(0,229,160,.35);
+  --glow-r:    0 0 8px rgba(255,61,90,.35);
+  --glow-ai:   0 0 10px rgba(124,92,252,.4);
+}
+
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+
+html, body {
+  width:500px; height:700px; overflow:hidden;
+  background:var(--bg0);
+  color:var(--text);
+  font-family:var(--mono);
+  font-size:11px;
+  user-select:none;
+}
+
+/* ── CRT Scanlines ─────────────────────────────────────── */
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
+  background:repeating-linear-gradient(0deg,
+    transparent,transparent 2px,
+    rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);
+}
+
+/* ── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(0,160,200,.2); border-radius:2px; }
+::-webkit-scrollbar-thumb:hover { background:rgba(0,200,255,.35); }
+
+/* ════════════════════════════════════════════════════════
+   TITLE BAR
+   ════════════════════════════════════════════════════════ */
+.titlebar {
+  -webkit-app-region:drag;
+  height:30px;
+  background:linear-gradient(90deg,#040810 0%,#070c1a 100%);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center;
+  padding:0 10px;
+  flex-shrink:0;
+  position:relative;
+}
+.titlebar::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan3),transparent);
+}
+.tb-brand {
+  display:flex; align-items:center; gap:8px;
+  -webkit-app-region:no-drag;
+}
+.tb-eye { flex-shrink:0; }
+.tb-name {
+  font-family:var(--ui); font-size:13px; font-weight:700;
+  color:var(--cyan); letter-spacing:2px; text-transform:uppercase;
+}
+.tb-ver {
+  font-family:var(--mono); font-size:9px;
+  color:var(--text3); letter-spacing:1px;
+}
+.tb-spacer { flex:1; }
+.tb-controls { -webkit-app-region:no-drag; display:flex; gap:4px; }
+.wc {
+  width:24px; height:18px;
+  border:1px solid var(--border2);
+  background:rgba(0,0,0,.3);
+  color:var(--text2); font-size:9px; font-family:var(--mono);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border-radius:1px;
+  transition:all .15s;
+}
+.wc:hover      { background:rgba(0,180,255,.12); color:var(--cyan); border-color:var(--border3); }
+.wc.cl:hover   { background:rgba(255,61,90,.2);  color:var(--red);  border-color:rgba(255,61,90,.5); }
+
+/* ════════════════════════════════════════════════════════
+   STATUS STRIP (under titlebar)
+   ════════════════════════════════════════════════════════ */
+.status-strip {
+  height:22px;
+  background:var(--bg1);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center;
+  padding:0 12px; gap:14px;
+  flex-shrink:0;
+}
+.si {
+  display:flex; align-items:center; gap:4px;
+  font-size:9px; color:var(--text2); letter-spacing:.5px;
+}
+.sdot {
+  width:5px; height:5px; border-radius:50%;
+  background:var(--text3);
+}
+.sdot.on  { background:var(--green);  box-shadow:var(--glow-g); animation:dotPulse 2s ease-in-out infinite; }
+.sdot.off { background:var(--warn); }
+.sdot.ai  { background:var(--ai2);    box-shadow:var(--glow-ai); animation:dotPulse 2s ease-in-out infinite; }
+@keyframes dotPulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.ss-sep { width:1px; height:12px; background:var(--border); }
+.ss-spacer { flex:1; }
+.clock { font-size:9px; color:var(--text2); letter-spacing:1px; font-family:var(--mono); }
+
+/* ════════════════════════════════════════════════════════
+   TAB BAR
+   ════════════════════════════════════════════════════════ */
+.tabbar {
+  display:flex;
+  background:var(--bg1);
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.tab {
+  flex:1; height:28px;
+  display:flex; align-items:center; justify-content:center; gap:5px;
+  font-family:var(--mono); font-size:9px; letter-spacing:1.5px;
+  color:var(--text3); text-transform:uppercase;
+  cursor:pointer; border-bottom:2px solid transparent;
+  transition:all .15s;
+  -webkit-app-region:no-drag;
+}
+.tab:hover { color:var(--text2); background:rgba(0,180,255,.04); }
+.tab.active {
+  color:var(--cyan); border-bottom-color:var(--cyan);
+  background:rgba(0,180,255,.06);
+}
+.tab-badge {
+  background:rgba(0,180,255,.15); border:1px solid var(--border2);
+  color:var(--cyan2); font-size:8px;
+  padding:0 4px; border-radius:1px; min-width:16px; text-align:center;
+}
+
+/* ════════════════════════════════════════════════════════
+   VIEWS
+   ════════════════════════════════════════════════════════ */
+.app-body { flex:1; overflow:hidden; display:flex; flex-direction:column; min-height:0; }
+.view { display:none; flex:1; flex-direction:column; overflow:hidden; min-height:0; }
+.view.active { display:flex; }
+
+/* ════════════════════════════════════════════════════════
+   TICKET VIEW — scroll body + bottom bar
+   ════════════════════════════════════════════════════════ */
+.form-scroll {
+  flex:1; overflow-y:auto; overflow-x:hidden;
+  padding:10px 12px 6px;
+  display:flex; flex-direction:column; gap:8px;
+  min-height:0;
+}
+
+/* ── Section Block ─────────────────────────────────────── */
+.sec {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:2px;
+  position:relative;
+  overflow:hidden;
+}
+.sec::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,200,255,.2),transparent);
+}
+.sec-hd {
+  display:flex; align-items:center; gap:6px;
+  padding:5px 10px;
+  background:linear-gradient(90deg,rgba(0,180,255,.06),transparent);
+  border-bottom:1px solid var(--border);
+  font-size:9px; letter-spacing:2px; color:var(--cyan2); text-transform:uppercase;
+}
+.sec-hd-right { margin-left:auto; display:flex; align-items:center; gap:5px; }
+.sec-icon { font-size:11px; }
+.sec-body { padding:8px 10px 10px; display:flex; flex-direction:column; gap:6px; }
+
+/* ── Emitente locked ────────────────────────────────────── */
+.emitente-row {
+  display:grid; grid-template-columns:1fr 1fr; gap:6px;
+}
+.emitente-field {
+  display:flex; align-items:center; gap:6px;
+  padding:5px 8px;
+  background:rgba(0,180,255,.04);
+  border:1px solid rgba(0,180,255,.14);
+  border-radius:2px;
+  font-size:10px; color:var(--text2);
+  overflow:hidden;
+}
+.emitente-field span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; color:var(--text); }
+.emitente-field .lk { font-size:9px; color:var(--cyan3); flex-shrink:0; }
+.emitente-full { grid-column:1/-1; }
+.emitente-edit-btn {
+  margin-left:auto; background:transparent; border:none;
+  color:var(--text3); cursor:pointer; font-size:10px; padding:1px 4px;
+  transition:color .15s; -webkit-app-region:no-drag;
+}
+.emitente-edit-btn:hover { color:var(--cyan); }
+
+/* ── Field ─────────────────────────────────────────────── */
+.field { display:flex; flex-direction:column; gap:3px; }
+.frow  { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.lbl {
+  font-size:8px; letter-spacing:1.5px; color:var(--text3); text-transform:uppercase;
+  display:flex; align-items:center; gap:4px;
+}
+.lbl .ai-tag {
+  color:var(--ai2); font-size:7px; letter-spacing:1px;
+  border:1px solid rgba(124,92,252,.4); padding:0 3px; border-radius:1px;
+}
+.inp {
+  background:rgba(0,0,0,.4);
+  border:1px solid var(--border);
+  color:var(--text); font-family:var(--mono); font-size:11px;
+  padding:5px 8px; outline:none; width:100%; height:26px;
+  border-radius:2px;
+  transition:border-color .15s, box-shadow .15s;
+  user-select:text; -webkit-app-region:no-drag;
+}
+.inp:focus { border-color:var(--cyan2); box-shadow:0 0 0 1px rgba(0,180,255,.15),inset 0 0 6px rgba(0,180,255,.04); }
+.inp.ai-filled { border-color:rgba(124,92,252,.5)!important; box-shadow:0 0 0 1px rgba(124,92,252,.15)!important; }
+.inp::placeholder { color:var(--text3); font-size:10px; }
+.textarea {
+  background:rgba(0,0,0,.4);
+  border:1px solid var(--border);
+  color:var(--text); font-family:var(--mono); font-size:10px;
+  padding:6px 8px; outline:none; width:100%; min-height:80px;
+  resize:vertical; border-radius:2px; line-height:1.5;
+  transition:border-color .15s;
+  user-select:text; -webkit-app-region:no-drag;
+}
+.textarea:focus { border-color:var(--cyan2); box-shadow:0 0 0 1px rgba(0,180,255,.15); }
+.textarea.ai-filled { border-color:rgba(124,92,252,.5)!important; }
+.textarea::placeholder { color:var(--text3); font-size:10px; }
+
+/* ── AI Hint ────────────────────────────────────────────── */
+.ai-hint {
+  display:none; align-items:center; gap:5px;
+  font-size:8px; color:var(--ai2); margin-top:1px;
+  animation:fadeIn .25s ease;
+}
+.ai-hint.show { display:flex; }
+.ai-hint-txt { color:var(--text2); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ah-btn {
+  background:transparent; border:1px solid var(--ai);
+  color:var(--ai2); font-family:var(--mono); font-size:8px;
+  padding:1px 5px; cursor:pointer; border-radius:1px;
+  transition:all .12s; -webkit-app-region:no-drag;
+}
+.ah-btn:hover { background:var(--ai); color:#fff; }
+.ah-btn.dim { border-color:var(--text3); color:var(--text3); }
+.ah-btn.dim:hover { background:var(--text3); color:#000; }
+
+/* ── AI badge on textarea ───────────────────────────────── */
+.motivo-wrap { position:relative; }
+.ai-badge {
+  position:absolute; right:6px; top:6px;
+  background:rgba(124,92,252,.2); border:1px solid rgba(124,92,252,.4);
+  color:var(--ai2); font-size:8px; letter-spacing:1px;
+  padding:1px 5px; border-radius:1px;
+  display:none;
+}
+.ai-badge.show { display:block; }
+
+/* ── Formalize button inline ────────────────────────────── */
+.formalizar-btn {
+  position:absolute; right:6px; bottom:6px;
+  background:rgba(124,92,252,.15); border:1px solid rgba(124,92,252,.35);
+  color:var(--ai2); font-family:var(--mono); font-size:8px;
+  padding:2px 7px; cursor:pointer; border-radius:1px;
+  transition:all .15s; -webkit-app-region:no-drag;
+  letter-spacing:1px;
+}
+.formalizar-btn:hover { background:rgba(124,92,252,.3); border-color:var(--ai2); }
+.formalizar-btn:disabled { opacity:.3; cursor:default; }
+
+/* ── Draft bar ──────────────────────────────────────────── */
+.draft-bar {
+  display:none; align-items:center; gap:6px;
+  padding:4px 12px; background:#0a0c04;
+  border-top:1px solid rgba(240,180,41,.15);
+  font-size:9px; color:var(--warn);
+  flex-shrink:0;
+}
+.draft-bar.show { display:flex; }
+.db-btn {
+  background:transparent; border:1px solid rgba(240,180,41,.3);
+  color:var(--warn); font-family:var(--mono); font-size:9px;
+  padding:1px 7px; cursor:pointer; border-radius:1px;
+  transition:background .12s; -webkit-app-region:no-drag;
+}
+.db-btn:hover { background:rgba(240,180,41,.12); }
+
+/* ════════════════════════════════════════════════════════
+   BOTTOM ACTION BAR
+   ════════════════════════════════════════════════════════ */
+.action-bar {
+  display:flex; gap:6px;
+  padding:8px 12px;
+  background:var(--bg1);
+  border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.btn {
+  display:flex; align-items:center; justify-content:center; gap:4px;
+  background:linear-gradient(135deg,rgba(0,0,0,.5),rgba(0,0,0,.3));
+  border:1px solid var(--border2); color:var(--text);
+  font-family:var(--mono); font-size:10px;
+  padding:7px 10px; cursor:pointer; border-radius:2px;
+  transition:all .15s; letter-spacing:.5px;
+  -webkit-app-region:no-drag;
+}
+.btn:hover:not(:disabled) { background:rgba(0,180,255,.08); border-color:var(--border3); color:var(--cyan); }
+.btn:active:not(:disabled) { transform:translateY(1px); }
+.btn:disabled { opacity:.28; cursor:default; }
+.btn.primary {
+  flex:1;
+  background:linear-gradient(135deg,rgba(0,60,80,.6),rgba(0,40,70,.4));
+  border-color:var(--cyan2); color:var(--cyan);
+  font-family:var(--ui); font-size:12px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase;
+  box-shadow:0 0 12px rgba(0,180,255,.1);
+}
+.btn.primary:hover:not(:disabled) { box-shadow:0 0 20px rgba(0,212,245,.25); border-color:var(--cyan); }
+
+/* ════════════════════════════════════════════════════════
+   RESULT OVERLAY
+   ════════════════════════════════════════════════════════ */
+.overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.88); z-index:500;
+  flex-direction:column; backdrop-filter:blur(3px);
+}
+.overlay.show { display:flex; }
+.overlay-panel {
+  background:var(--panel); border:1px solid var(--border2);
+  margin:20px 14px; display:flex; flex-direction:column;
+  border-radius:2px; overflow:hidden;
+  box-shadow:0 0 30px rgba(0,180,255,.1);
+  animation:slideUp .2s ease;
+}
+@keyframes slideUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
+.ov-head {
+  background:linear-gradient(90deg,rgba(0,180,255,.08),transparent);
+  border-bottom:1px solid var(--border); padding:7px 12px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:9px; letter-spacing:2px; color:var(--cyan); text-transform:uppercase;
+  flex-shrink:0;
+}
+.ov-ai-tag { font-family:var(--mono); font-size:8px; color:var(--ai2); }
+.result-txt {
+  background:#020408; color:#00e5a0;
+  font-family:var(--mono); font-size:10px;
+  padding:10px 12px; white-space:pre-wrap; line-height:1.65;
+  overflow-y:auto; flex:1; min-height:0; letter-spacing:.2px;
+}
+.result-txt::-webkit-scrollbar-thumb { background:rgba(0,180,80,.2); }
+.ov-actions {
+  display:flex; gap:6px; padding:8px 10px;
+  border-top:1px solid var(--border); flex-shrink:0;
+}
+
+/* ════════════════════════════════════════════════════════
+   PROGRESS MODAL
+   ════════════════════════════════════════════════════════ */
+.prog-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.75); z-index:900;
+  align-items:center; justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.prog-overlay.show { display:flex; }
+.prog-box {
+  background:var(--panel); border:1px solid var(--border2);
+  padding:22px 26px; width:300px; border-radius:2px;
+  box-shadow:0 0 30px rgba(0,180,255,.1);
+}
+.prog-title {
+  font-family:var(--ui); font-size:12px; font-weight:700;
+  color:var(--cyan); letter-spacing:2px; text-align:center; margin-bottom:14px;
+}
+.prog-msg  { font-size:10px; color:var(--text2); margin-bottom:8px; min-height:14px; }
+.prog-track {
+  background:rgba(0,0,0,.5); border:1px solid var(--border);
+  height:8px; overflow:hidden; border-radius:1px;
+}
+.prog-fill {
+  height:100%;
+  background:linear-gradient(90deg,var(--cyan2),var(--cyan),var(--green));
+  width:0%; transition:width .12s linear;
+  box-shadow:0 0 6px var(--cyan2);
+}
+.prog-pct { font-size:8px; color:var(--text3); text-align:right; letter-spacing:1px; margin-top:4px; }
+
+/* ════════════════════════════════════════════════════════
+   SETTINGS VIEW
+   ════════════════════════════════════════════════════════ */
+.settings-scroll {
+  flex:1; overflow-y:auto; padding:12px;
+  display:flex; flex-direction:column; gap:10px;
+  min-height:0;
+}
+.sett-section {
+  background:var(--panel); border:1px solid var(--border); border-radius:2px;
+}
+.sett-hd {
+  padding:6px 10px; border-bottom:1px solid var(--border);
+  font-size:9px; letter-spacing:2px; color:var(--cyan2); text-transform:uppercase;
+  display:flex; align-items:center; gap:6px;
+}
+.sett-body { padding:10px; display:flex; flex-direction:column; gap:8px; }
+
+.sett-info-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:6px;
+}
+.sett-info-item {
+  background:rgba(0,0,0,.3); border:1px solid var(--border);
+  padding:6px 9px; border-radius:2px;
+}
+.sett-info-label { font-size:8px; letter-spacing:1px; color:var(--text3); text-transform:uppercase; margin-bottom:2px; }
+.sett-info-val   { font-size:10px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sett-info-val.on  { color:var(--green); }
+.sett-info-val.off { color:var(--warn); }
+
+.sett-save-btn {
+  background:linear-gradient(135deg,rgba(0,60,80,.5),rgba(0,40,70,.3));
+  border:1px solid var(--cyan2); color:var(--cyan);
+  font-family:var(--ui); font-size:11px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase;
+  padding:8px; cursor:pointer; border-radius:2px;
+  transition:all .15s; -webkit-app-region:no-drag;
+}
+.sett-save-btn:hover { box-shadow:0 0 12px rgba(0,180,255,.2); border-color:var(--cyan); }
+
+.sett-note {
+  font-size:9px; color:var(--text3); line-height:1.5;
+  background:rgba(0,180,255,.03); border:1px solid rgba(0,180,255,.08);
+  padding:6px 9px; border-radius:2px;
+}
+
+/* ════════════════════════════════════════════════════════
+   HISTORY VIEW
+   ════════════════════════════════════════════════════════ */
+.hist-scroll {
+  flex:1; overflow-y:auto; padding:8px 10px;
+  display:flex; flex-direction:column; gap:5px;
+  min-height:0;
+}
+.hist-card {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:2px; padding:7px 10px;
+  transition:border-color .15s;
+}
+.hist-card:hover { border-color:var(--border2); }
+.hc-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:3px; }
+.hc-id   { font-size:9px; color:var(--cyan2); letter-spacing:1px; }
+.hc-dt   { font-size:9px; color:var(--text3); }
+.hc-cli  { font-size:11px; color:var(--text); margin-bottom:2px; }
+.hc-lic  { font-size:9px; color:var(--text3); margin-bottom:4px; }
+.hc-tags { display:flex; align-items:center; gap:4px; }
+.htag {
+  font-size:8px; letter-spacing:.5px;
+  padding:1px 5px; border-radius:1px;
+  border:1px solid var(--border2); color:var(--text2);
+}
+.htag.ai    { border-color:rgba(124,92,252,.4); color:var(--ai2); }
+.htag.local { border-color:var(--border);       color:var(--text3); }
+.htag.mod   { border-color:rgba(0,180,255,.25); color:var(--cyan2); }
+.hc-emit { margin-left:auto; font-size:9px; color:var(--text3); }
+
+.empty-state {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:8px;
+  padding:30px;
+  font-size:9px; color:var(--text3); letter-spacing:2px; text-transform:uppercase;
+}
+
+/* ════════════════════════════════════════════════════════
+   AUDIT VIEW
+   ════════════════════════════════════════════════════════ */
+.audit-top {
+  display:flex; align-items:center; gap:4px;
+  padding:6px 10px; border-bottom:1px solid var(--border);
+  background:var(--bg1); flex-shrink:0;
+}
+.af-btn {
+  background:transparent; border:1px solid var(--border);
+  color:var(--text3); font-family:var(--mono); font-size:8px;
+  padding:2px 7px; cursor:pointer; border-radius:1px; letter-spacing:1px;
+  transition:all .12s; -webkit-app-region:no-drag;
+}
+.af-btn:hover  { background:rgba(0,180,255,.06); color:var(--text2); border-color:var(--border2); }
+.af-btn.active { background:rgba(0,180,255,.1); color:var(--cyan2); border-color:var(--border3); }
+.audit-scroll {
+  flex:1; overflow-y:auto; padding:4px 6px;
+  display:flex; flex-direction:column; gap:2px;
+  min-height:0;
+}
+.audit-row {
+  display:grid; grid-template-columns:100px 80px 1fr 80px;
+  gap:6px; align-items:center;
+  padding:4px 6px; border-radius:1px;
+  font-size:9px; border:1px solid transparent;
+  transition:background .1s;
+}
+.audit-row:hover { background:rgba(0,180,255,.04); border-color:var(--border); }
+.ar-ts   { color:var(--text3); letter-spacing:.3px; }
+.ar-user { color:var(--text2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ar-det  { color:var(--text3); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ar-id   { color:var(--text3); font-size:8px; text-align:right; }
+.etag {
+  display:inline-block; font-size:7px; letter-spacing:.5px;
+  padding:1px 4px; border-radius:1px; border:1px solid;
+  white-space:nowrap; font-family:var(--mono);
+}
+.etag-ticket { border-color:rgba(0,229,160,.35); color:var(--green2); }
+.etag-ai     { border-color:rgba(124,92,252,.4);  color:var(--ai2); }
+.etag-app    { border-color:rgba(0,180,255,.3);   color:var(--cyan2); }
+.etag-prefs  { border-color:rgba(240,180,41,.3);  color:var(--warn); }
+.etag-sys    { border-color:var(--border2);        color:var(--text3); }
+
+/* ════════════════════════════════════════════════════════
+   TOAST
+   ════════════════════════════════════════════════════════ */
+#toasts {
+  position:fixed; bottom:50px; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  z-index:9990; width:420px;
+}
+.toast {
+  padding:7px 14px; border-radius:2px;
+  font-family:var(--mono); font-size:10px; letter-spacing:.5px;
+  display:flex; align-items:center; gap:7px;
+  animation:toastIn .2s ease;
+  border:1px solid;
+}
+@keyframes toastIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.toast-ok   { background:rgba(0,40,25,.95); border-color:rgba(0,229,160,.3); color:var(--green); }
+.toast-err  { background:rgba(40,0,10,.95); border-color:rgba(255,61,90,.3); color:var(--red); }
+.toast-warn { background:rgba(35,25,0,.95); border-color:rgba(240,180,41,.3); color:var(--warn); }
+.toast-info { background:rgba(0,15,30,.95); border-color:var(--border2); color:var(--cyan2); }
+
+/* ════════════════════════════════════════════════════════
+   MODAL (Settings overlay)
+   ════════════════════════════════════════════════════════ */
+.modal {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.8); z-index:800;
+  align-items:center; justify-content:center;
+  backdrop-filter:blur(3px);
+}
+.modal.show { display:flex; }
+.modal-box {
+  background:var(--panel); border:1px solid var(--border2);
+  width:420px; border-radius:2px;
+  box-shadow:0 0 30px rgba(0,0,0,.8);
+  animation:slideUp .2s ease;
+}
+.modal-hd {
+  padding:9px 14px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:9px; letter-spacing:2px; color:var(--cyan); text-transform:uppercase;
+}
+.modal-x {
+  background:transparent; border:none; color:var(--text3);
+  font-size:13px; cursor:pointer; padding:2px 6px;
+  transition:color .12s; -webkit-app-region:no-drag;
+}
+.modal-x:hover { color:var(--red); }
+.modal-body { padding:14px; display:flex; flex-direction:column; gap:8px; }
+.modal-foot { padding:8px 14px; border-top:1px solid var(--border); display:flex; gap:6px; justify-content:flex-end; }
+
+/* ════════════════════════════════════════════════════════
+   UTILS
+   ════════════════════════════════════════════════════════ */
+@keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+
+/* ── APP SHELL ─────────────────────────────────────────── */
+.app { display:flex; flex-direction:column; width:500px; height:700px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══════════════════════════════════════════════════════
+     TITLEBAR
+     ═══════════════════════════════════════════════════════ -->
+<div class="titlebar">
+  <div class="tb-brand">
+    <!-- Eye of Providence (mini) -->
+    <svg class="tb-eye" width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="tg2" x1="50%" y1="0%" x2="50%" y2="100%">
+          <stop offset="0%" stop-color="#00e5ff" stop-opacity=".9"/>
+          <stop offset="100%" stop-color="#0080a0" stop-opacity=".6"/>
+        </linearGradient>
+      </defs>
+      <polygon points="50,6 94,82 6,82" fill="none" stroke="url(#tg2)" stroke-width="2"/>
+      <ellipse cx="50" cy="52" rx="12" ry="7.5" fill="none" stroke="url(#tg2)" stroke-width="1.5"/>
+      <circle  cx="50" cy="52" r="2.6" fill="url(#tg2)"/>
+    </svg>
+    <div>
+      <div class="tb-name">CLICBIZ</div>
+    </div>
+    <div class="tb-ver">TICKET MASTER v1.0</div>
+  </div>
+  <div class="tb-spacer"></div>
+  <div class="tb-controls">
+    <div class="wc"    onclick="CB.winMin()">─</div>
+    <div class="wc cl" onclick="CB.winClose()">✕</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     STATUS STRIP
+     ═══════════════════════════════════════════════════════ -->
+<div class="status-strip">
+  <div class="si">
+    <div class="sdot" id="dotConn"></div>
+    <span id="lblConn">verificando...</span>
+  </div>
+  <div class="ss-sep"></div>
+  <div class="si">
+    <div class="sdot" id="dotAi"></div>
+    <span id="lblAi">AI</span>
+  </div>
+  <div class="ss-sep"></div>
+  <div class="si" id="lblEmitente" style="color:var(--text2)">— sem emitente —</div>
+  <div class="ss-spacer"></div>
+  <div class="clock" id="clock">00:00:00</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB BAR
+     ═══════════════════════════════════════════════════════ -->
+<div class="tabbar">
+  <div class="tab active" id="tab-ticket"  onclick="showView('ticket')">📝 TICKET</div>
+  <div class="tab"        id="tab-history" onclick="showView('history')">
+    📋 HISTÓRICO <span class="tab-badge" id="histBadge">0</span>
+  </div>
+  <div class="tab" id="tab-audit"  onclick="showView('audit')">🛡 AUDIT</div>
+  <div class="tab" id="tab-config" onclick="showView('config')">⚙ CONFIG</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     APP BODY
+     ═══════════════════════════════════════════════════════ -->
+<div class="app-body">
+
+  <!-- ── VIEW: TICKET ─────────────────────────────────── -->
+  <div class="view active" id="view-ticket">
+    <div class="form-scroll" id="formScroll">
+
+      <!-- EMITENTE (locked / saved) -->
+      <div class="sec">
+        <div class="sec-hd">
+          <span class="sec-icon">🔒</span> SOLICITANTE RESPONSÁVEL PELA ABERTURA DO CHAMADO
+          <div class="sec-hd-right">
+            <button class="emitente-edit-btn" onclick="openSettings()" title="Editar emitente">✎ editar</button>
+          </div>
+        </div>
+        <div class="sec-body">
+          <div class="emitente-row">
+            <div class="emitente-field emitente-full">
+              <span class="lk">▸</span>
+              <span id="emNome" style="color:var(--text3)">— configure em CONFIG →</span>
+              <span id="emEmpresa" style="color:var(--text3);font-size:9px;margin-left:auto"></span>
+            </div>
+          </div>
+          <div class="emitente-row">
+            <div class="emitente-field">
+              <span class="lk">✉</span>
+              <span id="emEmail" style="color:var(--text3)">—</span>
+            </div>
+            <div class="emitente-field">
+              <span class="lk">☎</span>
+              <span id="emTel" style="color:var(--text3)">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- ESTABELECIMENTO -->
+      <div class="sec">
+        <div class="sec-hd"><span class="sec-icon">🏢</span> Estabelecimento</div>
+        <div class="sec-body">
+          <div class="frow">
+            <div class="field">
+              <div class="lbl">Licença</div>
+              <input class="inp" id="licenca" type="text" placeholder="Código" oninput="changed()">
+            </div>
+            <div class="field">
+              <div class="lbl">CNPJ</div>
+              <input class="inp" id="cnpj" type="text" placeholder="xx.xxx.xxx/xxxx-xx"
+                oninput="maskCNPJ(this);changed()" maxlength="18">
+            </div>
+          </div>
+          <div class="field">
+            <div class="lbl">Nome Cliente</div>
+            <input class="inp" id="nomeCliente" type="text" placeholder="Razão social" oninput="changed()">
+          </div>
+          <div class="frow">
+            <div class="field">
+              <div class="lbl">Versão PDV</div>
+              <input class="inp" id="versao" type="text" placeholder="12.74" oninput="changed()">
+              <div class="ai-hint" id="versaoHint">
+                <span>✦</span>
+                <span class="ai-hint-txt" id="versaoHintTxt"></span>
+                <button class="ah-btn" onclick="aceitarHint('versao')">Usar</button>
+                <button class="ah-btn dim" onclick="recusarHint('versao')">✕</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="lbl">Módulo Fiscal <span class="ai-tag">✦ AI</span></div>
+              <input class="inp" id="modulo" type="text" placeholder="NFCe / SAT..." oninput="changed()">
+              <div class="ai-hint" id="moduloHint">
+                <span>✦</span>
+                <span class="ai-hint-txt" id="moduloHintTxt"></span>
+                <button class="ah-btn" onclick="aceitarHint('modulo')">Usar</button>
+                <button class="ah-btn dim" onclick="recusarHint('modulo')">✕</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MOTIVO -->
+      <div class="sec">
+        <div class="sec-hd">
+          <span class="sec-icon">📝</span> Motivo do Contato
+          <div class="sec-hd-right" style="font-size:8px;color:var(--ai2);letter-spacing:1px;">✦ FORMALIZADO POR AI</div>
+        </div>
+        <div class="sec-body">
+          <div class="field">
+            <div class="motivo-wrap">
+              <textarea class="textarea" id="motivo" rows="5"
+                placeholder="Descreva livremente... a IA formaliza e padroniza automaticamente."
+                oninput="changed()"></textarea>
+              <div class="ai-badge" id="aiBadge">✦ AI</div>
+              <button class="formalizar-btn" id="btnFormalizar" onclick="formalizarManual()" disabled>✦ Formalizar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /form-scroll -->
+
+    <!-- DRAFT BAR -->
+    <div class="draft-bar" id="draftBar">
+      <span>📌</span>
+      <span id="draftMsg">Rascunho disponível</span>
+      <button class="db-btn" onclick="restaurarDraft()">↩ Restaurar</button>
+      <button class="db-btn" onclick="descartarDraft()">✕ Descartar</button>
+    </div>
+
+    <!-- ACTION BAR -->
+    <div class="action-bar">
+      <button class="btn" onclick="resetForm()" title="Limpar formulário">🗑</button>
+      <button class="btn primary" onclick="gerarTicket()" id="btnGerar">▶ GERAR TICKET</button>
+      <button class="btn" id="btnCopiar" onclick="copiarTicket()" disabled title="Copiar">📋</button>
+      <button class="btn" id="btnSalvar" onclick="salvarTicket()" disabled title="Salvar .TXT">💾</button>
+    </div>
+  </div>
+
+  <!-- ── VIEW: HISTÓRICO ──────────────────────────────── -->
+  <div class="view" id="view-history">
+    <div class="hist-scroll" id="histGrid">
+      <div class="empty-state">
+        <div>📭</div>
+        <div>NENHUM TICKET GERADO</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── VIEW: AUDIT ──────────────────────────────────── -->
+  <div class="view" id="view-audit">
+    <div class="audit-top">
+      <button class="af-btn active" id="afAll"    onclick="filterAudit('all',this)">TODOS</button>
+      <button class="af-btn"        id="afTicket" onclick="filterAudit('ticket',this)">TICKETS</button>
+      <button class="af-btn"        id="afAi"     onclick="filterAudit('ai',this)">AI</button>
+      <button class="af-btn"        id="afApp"    onclick="filterAudit('app',this)">SISTEMA</button>
+    </div>
+    <div class="audit-scroll" id="auditBody">
+      <div class="empty-state"><div>NENHUM EVENTO</div></div>
+    </div>
+  </div>
+
+  <!-- ── VIEW: CONFIG ─────────────────────────────────── -->
+  <div class="view" id="view-config">
+    <div class="settings-scroll">
+
+      <!-- Emitente -->
+      <div class="sett-section">
+        <div class="sett-hd">🔒 Dados do Emitente <span style="margin-left:auto;font-size:8px;color:var(--text3)">SALVO PERMANENTEMENTE</span></div>
+        <div class="sett-body">
+          <div class="frow">
+            <div class="field">
+              <div class="lbl">Nome Técnico</div>
+              <input class="inp" id="cfg_nome" type="text" placeholder="Gabriel Perdigão">
+            </div>
+            <div class="field">
+              <div class="lbl">Empresa</div>
+              <input class="inp" id="cfg_empresa" type="text" placeholder="Clicbiz">
+            </div>
+          </div>
+          <div class="frow">
+            <div class="field">
+              <div class="lbl">E-mail</div>
+              <input class="inp" id="cfg_email" type="email" placeholder="suporte@clicbiz.com.br">
+            </div>
+            <div class="field">
+              <div class="lbl">Telefone</div>
+              <input class="inp" id="cfg_tel" type="tel" placeholder="(17) 99999-9999">
+            </div>
+          </div>
+          <button class="sett-save-btn" onclick="salvarPrefs()">💾 SALVAR EMITENTE</button>
+        </div>
+      </div>
+
+      <!-- DeepSeek / Self-Hosted -->
+      <div class="sett-section">
+        <div class="sett-hd">🤖 DeepSeek AI</div>
+        <div class="sett-body">
+          <div class="sett-note">
+            Configure via arquivo <strong style="color:var(--cyan2)">.env</strong> na mesma pasta do executável:<br><br>
+            <span style="color:var(--cyan3)">DEEPSEEK_API_KEY=sua_chave_aqui</span><br>
+            <span style="color:var(--cyan3)">DEEPSEEK_MODEL=deepseek-chat</span><br>
+            <span style="color:var(--cyan3)"># Self-hosted (Ollama, LM Studio, etc):</span><br>
+            <span style="color:var(--cyan3)">DEEPSEEK_BASE_URL=http://localhost:11434</span><br><br>
+            Sem internet: a IA self-hosted funciona offline. Sem nenhuma chave: modo offline total, o ticket é gerado normalmente sem formalização.
+          </div>
+          <div class="sett-info-grid" id="aiInfoGrid">
+            <div class="sett-info-item">
+              <div class="sett-info-label">Status</div>
+              <div class="sett-info-val" id="cfgAiStatus">—</div>
+            </div>
+            <div class="sett-info-item">
+              <div class="sett-info-label">Modelo</div>
+              <div class="sett-info-val" id="cfgAiModel">—</div>
+            </div>
+            <div class="sett-info-item">
+              <div class="sett-info-label">Endpoint</div>
+              <div class="sett-info-val" id="cfgAiBase" style="font-size:9px">—</div>
+            </div>
+            <div class="sett-info-item">
+              <div class="sett-info-label">Modo</div>
+              <div class="sett-info-val" id="cfgAiMode">—</div>
+            </div>
+          </div>
+          <button class="sett-save-btn" style="font-size:10px" onclick="CB.openUserData()">📂 Abrir Pasta de Configuração</button>
+        </div>
+      </div>
+
+      <!-- System Info -->
+      <div class="sett-section">
+        <div class="sett-hd">ℹ Sistema</div>
+        <div class="sett-body">
+          <div class="sett-info-grid">
+            <div class="sett-info-item">
+              <div class="sett-info-label">Versão</div>
+              <div class="sett-info-val" id="cfgVer">—</div>
+            </div>
+            <div class="sett-info-item">
+              <div class="sett-info-label">Tickets Gerados</div>
+              <div class="sett-info-val" id="cfgTktCount">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /app-body -->
+
+</div><!-- /app -->
+
+<!-- ═══════════════════════════════════════════════════════
+     RESULT OVERLAY
+     ═══════════════════════════════════════════════════════ -->
+<div class="overlay" id="resultOverlay">
+  <div class="overlay-panel">
+    <div class="ov-head">
+      <span>📄 TICKET GERADO</span>
+      <span class="ov-ai-tag" id="ovAiTag"></span>
+    </div>
+    <pre class="result-txt" id="resultTxt"></pre>
+    <div class="ov-actions">
+      <button class="btn" onclick="copiarTicket()">📋 Copiar</button>
+      <button class="btn" style="border-color:rgba(0,229,160,.4);color:var(--green)" onclick="salvarTicket()">💾 Salvar .TXT</button>
+      <button class="btn" onclick="fecharResult()">✕ Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PROGRESS MODAL
+     ═══════════════════════════════════════════════════════ -->
+<div class="prog-overlay" id="progOverlay">
+  <div class="prog-box">
+    <div class="prog-title">⬡ PROCESSANDO</div>
+    <div class="prog-msg" id="progMsg">Iniciando...</div>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-pct" id="progPct">0%</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SETTINGS MODAL (quick edit from ticket view)
+     ═══════════════════════════════════════════════════════ -->
+<div class="modal" id="settingsModal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <span>⚙ Editar Emitente</span>
+      <button class="modal-x" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="frow">
+        <div class="field">
+          <div class="lbl">Nome Técnico</div>
+          <input class="inp" id="m_nome"    type="text" placeholder="Gabriel Perdigão">
+        </div>
+        <div class="field">
+          <div class="lbl">Empresa</div>
+          <input class="inp" id="m_empresa" type="text" placeholder="Clicbiz">
+        </div>
+      </div>
+      <div class="frow">
+        <div class="field">
+          <div class="lbl">E-mail</div>
+          <input class="inp" id="m_email" type="email" placeholder="suporte@...">
+        </div>
+        <div class="field">
+          <div class="lbl">Telefone</div>
+          <input class="inp" id="m_tel" type="tel" placeholder="(xx) xxxxx-xxxx">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeSettings()">Cancelar</button>
+      <button class="btn" style="border-color:var(--cyan2);color:var(--cyan)" onclick="salvarPrefsModal()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toasts"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+// ── STATE ─────────────────────────────────────────────────────
+let aiOk       = false;
+let aiSelfHost = false;
+let prefs      = {};
+let currentTxt = null;
+let currentFn  = null;
+let auditData  = [];
+let auditFilter= 'all';
+let hints      = {};
+let autoT      = null, sugestaoT = null;
+
+// ── CLOCK ──────────────────────────────────────────────────────
+(function tick() {
+  const n = new Date();
+  document.getElementById('clock').textContent =
+    n.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  setTimeout(tick, 1000);
+})();
+
+// ── INIT ───────────────────────────────────────────────────────
+window.addEventListener('load', async () => {
+  // AI status
+  try {
+    const s = await CB.aiStatus();
+    aiOk = s.available;
+    aiSelfHost = s.selfHosted;
+    const dot   = document.getElementById('dotAi');
+    const label = document.getElementById('lblAi');
+    if (aiOk) {
+      dot.className = 'sdot ai';
+      label.textContent = (aiSelfHost ? '✦ AI LOCAL' : '✦ AI') + ` · ${s.model}`;
+    } else {
+      dot.className = 'sdot off';
+      label.textContent = 'AI OFFLINE';
+    }
+    // Config page
+    document.getElementById('cfgAiStatus').textContent = aiOk ? 'ATIVO' : 'INATIVO';
+    document.getElementById('cfgAiStatus').className   = 'sett-info-val ' + (aiOk ? 'on' : 'off');
+    document.getElementById('cfgAiModel').textContent  = s.model;
+    document.getElementById('cfgAiBase').textContent   = s.base || 'deepseek.com';
+    document.getElementById('cfgAiMode').textContent   = aiSelfHost ? 'SELF-HOSTED' : 'CLOUD API';
+  } catch(e) {
+    document.getElementById('lblAi').textContent = 'AI ERRO';
+  }
+
+  // Sys info
+  try {
+    const si = await CB.sysInfo();
+    document.getElementById('cfgVer').textContent = si.version;
+    document.getElementById('dotConn').className  = 'sdot on';
+    document.getElementById('lblConn').textContent = 'SISTEMA OK';
+  } catch {}
+
+  // Load prefs (emitente)
+  await carregarPrefs();
+
+  // Check draft
+  await verificarDraft();
+
+  // Load history count
+  await updateHistCount();
+
+  // Enable formalizar btn if AI
+  document.getElementById('btnFormalizar').disabled = !aiOk;
+});
+
+// ── PREFS ──────────────────────────────────────────────────────
+async function carregarPrefs() {
+  try {
+    prefs = await CB.prefsLoad() || {};
+    atualizarEmitente();
+    // Preenche config page
+    document.getElementById('cfg_nome').value    = prefs.emitente_nome    || '';
+    document.getElementById('cfg_empresa').value = prefs.emitente_empresa || '';
+    document.getElementById('cfg_email').value   = prefs.emitente_email   || '';
+    document.getElementById('cfg_tel').value     = prefs.emitente_telefone|| '';
+  } catch {}
+}
+
+function atualizarEmitente() {
+  const nome    = prefs.emitente_nome     || '';
+  const empresa = prefs.emitente_empresa  || '';
+  const email   = prefs.emitente_email    || '';
+  const tel     = prefs.emitente_telefone || '';
+
+  document.getElementById('emNome').textContent    = nome    || '— configure em CONFIG →';
+  document.getElementById('emNome').style.color    = nome    ? 'var(--text)'  : 'var(--text3)';
+  document.getElementById('emEmpresa').textContent = empresa || '';
+  document.getElementById('emEmail').textContent   = email   || '—';
+  document.getElementById('emEmail').style.color   = email   ? 'var(--text)'  : 'var(--text3)';
+  document.getElementById('emTel').textContent     = tel     || '—';
+  document.getElementById('emTel').style.color     = tel     ? 'var(--text)'  : 'var(--text3)';
+
+  document.getElementById('lblEmitente').textContent = nome || '— sem emitente —';
+}
+
+async function salvarPrefs() {
+  const p = {
+    emitente_nome:     document.getElementById('cfg_nome').value.trim(),
+    emitente_empresa:  document.getElementById('cfg_empresa').value.trim(),
+    emitente_email:    document.getElementById('cfg_email').value.trim(),
+    emitente_telefone: document.getElementById('cfg_tel').value.trim(),
+  };
+  await CB.prefsSave(p);
+  prefs = { ...prefs, ...p };
+  atualizarEmitente();
+  toast('✔ Emitente salvo permanentemente', 'ok');
+}
+
+async function salvarPrefsModal() {
+  const p = {
+    emitente_nome:     document.getElementById('m_nome').value.trim(),
+    emitente_empresa:  document.getElementById('m_empresa').value.trim(),
+    emitente_email:    document.getElementById('m_email').value.trim(),
+    emitente_telefone: document.getElementById('m_tel').value.trim(),
+  };
+  await CB.prefsSave(p);
+  prefs = { ...prefs, ...p };
+  atualizarEmitente();
+  // Sync config page
+  document.getElementById('cfg_nome').value    = p.emitente_nome;
+  document.getElementById('cfg_empresa').value = p.emitente_empresa;
+  document.getElementById('cfg_email').value   = p.emitente_email;
+  document.getElementById('cfg_tel').value     = p.emitente_telefone;
+  closeSettings();
+  toast('✔ Emitente atualizado', 'ok');
+}
+
+// ── SETTINGS MODAL ─────────────────────────────────────────────
+function openSettings() {
+  document.getElementById('m_nome').value    = prefs.emitente_nome    || '';
+  document.getElementById('m_empresa').value = prefs.emitente_empresa || '';
+  document.getElementById('m_email').value   = prefs.emitente_email   || '';
+  document.getElementById('m_tel').value     = prefs.emitente_telefone|| '';
+  document.getElementById('settingsModal').classList.add('show');
+}
+function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
+
+// ── VIEWS ──────────────────────────────────────────────────────
+function showView(v) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+  document.getElementById('tab-' + v).classList.add('active');
+  if (v === 'history') loadHistory();
+  if (v === 'audit')   loadAudit();
+  if (v === 'config') {
+    CB.ticketsGet(500).then(t => {
+      document.getElementById('cfgTktCount').textContent = t.length;
+    }).catch(()=>{});
+  }
+}
+
+// ── MASK ───────────────────────────────────────────────────────
+function maskCNPJ(el) {
+  let v = el.value.replace(/\D/g,'');
+  v = v.replace(/^(\d{2})(\d)/,'$1.$2');
+  v = v.replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3');
+  v = v.replace(/\.(\d{3})(\d)/,'.$1/$2');
+  v = v.replace(/(\d{4})(\d)/,'$1-$2');
+  el.value = v;
+}
+
+// ── FORM DATA ──────────────────────────────────────────────────
+const FORM_FIELDS = ['contato','telefone','licenca','cnpj','nomeCliente','versao','modulo','motivo'];
+
+function getFormData() {
+  const d = {};
+  FORM_FIELDS.forEach(id => { d[id] = document.getElementById(id)?.value?.trim() || null; });
+  // Emitente from prefs (always null if not configured — user fills in CONFIG)
+  d.emitente_nome      = prefs.emitente_nome     || null;
+  d.emitente_empresa   = prefs.emitente_empresa  || null;
+  d.emitente_email     = prefs.emitente_email    || null;
+  d.emitente_telefone  = prefs.emitente_telefone || null;
+  return d;
+}
+
+// ── DRAFT ──────────────────────────────────────────────────────
+async function verificarDraft() {
+  try {
+    const d = await CB.draftLoad();
+    if (!d || !d._at) return;
+    const temDados = FORM_FIELDS.some(id => d[id] && d[id] !== '');
+    if (!temDados) return;
+    const q = new Date(d._at).toLocaleString('pt-BR');
+    document.getElementById('draftMsg').textContent = `📌 Rascunho de ${q}`;
+    document.getElementById('draftBar').classList.add('show');
+  } catch {}
+}
+
+async function restaurarDraft() {
+  try {
+    const d = await CB.draftLoad();
+    if (!d) return;
+    FORM_FIELDS.forEach(id => {
+      if (d[id] !== undefined && d[id] !== null) {
+        const el = document.getElementById(id);
+        if (el) el.value = d[id];
+      }
+    });
+    document.getElementById('draftBar').classList.remove('show');
+    toast('↩ Rascunho restaurado', 'ok');
+  } catch {}
+}
+
+async function descartarDraft() {
+  await CB.draftClear();
+  document.getElementById('draftBar').classList.remove('show');
+  toast('Rascunho descartado', 'warn');
+}
+
+function changed() {
+  clearTimeout(autoT); clearTimeout(sugestaoT);
+  autoT     = setTimeout(() => autoSaveDraft(), 2200);
+  if (aiOk) sugestaoT = setTimeout(() => rodarSugestao(), 2800);
+  // Enable formalizar if text
+  const mot = document.getElementById('motivo').value.trim();
+  document.getElementById('btnFormalizar').disabled = !aiOk || !mot;
+}
+
+async function autoSaveDraft() {
+  const d = getFormData();
+  const temAlgo = FORM_FIELDS.some(id => d[id] && d[id] !== '');
+  if (!temAlgo) return;
+  d._at = new Date().toISOString();
+  await CB.draftSave(d);
+}
+
+// ── AI SUGGESTIONS ─────────────────────────────────────────────
+async function rodarSugestao() {
+  if (!aiOk) return;
+  const d = getFormData();
+  if (!d.nomeCliente && !d.licenca) return;
+  try {
+    const s = await CB.aiSugerir({ dados: d, user: d.emitente_nome });
+    if (!s) return;
+    if (s.modulo && !document.getElementById('modulo').value.trim()) {
+      hints.modulo = s.modulo;
+      document.getElementById('moduloHintTxt').textContent = s.modulo;
+      document.getElementById('moduloHint').classList.add('show');
+    }
+    if (s.versao && !document.getElementById('versao').value.trim()) {
+      hints.versao = s.versao;
+      document.getElementById('versaoHintTxt').textContent = s.versao;
+      document.getElementById('versaoHint').classList.add('show');
+    }
+  } catch {}
+}
+
+function aceitarHint(field) {
+  if (hints[field]) {
+    document.getElementById(field).value = hints[field];
+    document.getElementById(field).classList.add('ai-filled');
+  }
+  document.getElementById(field + 'Hint').classList.remove('show');
+  delete hints[field];
+}
+
+function recusarHint(field) {
+  document.getElementById(field + 'Hint').classList.remove('show');
+  delete hints[field];
+}
+
+// ── FORMALIZAR MANUAL ──────────────────────────────────────────
+async function formalizarManual() {
+  const el  = document.getElementById('motivo');
+  const txt = el.value.trim();
+  if (!txt || !aiOk) return;
+  document.getElementById('btnFormalizar').disabled = true;
+  toast('⬡ Formalizando...', 'info');
+  try {
+    const r = await CB.aiFormalizar({ texto: txt, user: prefs.emitente_nome });
+    if (r.ok && r.texto) {
+      el.value = r.texto;
+      el.classList.add('ai-filled');
+      document.getElementById('aiBadge').classList.add('show');
+      toast('✦ Formalizado por AI', 'ok');
+    } else { toast('AI indisponível — texto mantido', 'warn'); }
+  } catch { toast('Erro na formalização', 'err'); }
+  document.getElementById('btnFormalizar').disabled = !aiOk;
+}
+
+// ── PROGRESS ───────────────────────────────────────────────────
+function progress(steps, cb) {
+  const ov   = document.getElementById('progOverlay');
+  const fill = document.getElementById('progFill');
+  const pct  = document.getElementById('progPct');
+  const msg  = document.getElementById('progMsg');
+  ov.classList.add('show');
+  let i = 0;
+  const run = () => {
+    if (i >= steps.length) {
+      setTimeout(() => { ov.classList.remove('show'); cb(); }, 200);
+      return;
+    }
+    const [p, m] = steps[i++];
+    fill.style.width = p + '%'; pct.textContent = p + '%'; msg.textContent = m;
+    setTimeout(run, 170 + Math.random()*110);
+  };
+  run();
+}
+
+// ── GERAR TICKET ───────────────────────────────────────────────
+async function gerarTicket() {
+  const dados = getFormData();
+
+  const steps = aiOk ? [
+    [15, '✦ Conectando à IA...'],
+    [35, '✦ Analisando dados...'],
+    [60, '✦ Formalizando linguagem corporativa...'],
+    [80, '✦ Montando estrutura do ticket...'],
+    [95, '✦ Aplicando padrão...'],
+    [100,'✦ Concluído!'],
+  ] : [
+    [25, 'Validando dados...'],
+    [60, 'Montando ticket...'],
+    [90, 'Formatando saída...'],
+    [100,'Concluído!'],
+  ];
+
+  progress(steps, async () => {
+    try {
+      const res = await CB.gerar(dados);
+
+      // Update motivo if AI formalized
+      if (res.aiUsed) {
+        const el = document.getElementById('motivo');
+        // Extract motivo section from ticket text
+        const m = res.motivoFinal;
+        if (m) { el.value = m; el.classList.add('ai-filled'); }
+        document.getElementById('aiBadge').classList.add('show');
+      }
+
+      currentTxt = res.texto;
+      currentFn  = res.filename;
+
+      document.getElementById('resultTxt').textContent = res.texto;
+      document.getElementById('ovAiTag').textContent   =
+        res.aiUsed ? '✦ Formalizado por DeepSeek AI' : '◌ Modo offline';
+      document.getElementById('resultOverlay').classList.add('show');
+
+      document.getElementById('btnCopiar').disabled = false;
+      document.getElementById('btnSalvar').disabled = false;
+
+      document.getElementById('draftBar').classList.remove('show');
+      await updateHistCount();
+
+      toast(`✔ ${res.tktId}${res.aiUsed ? ' · IA aplicada' : ''}`, 'ok');
+    } catch(e) {
+      toast('Erro ao gerar ticket: ' + e.message, 'err');
+    }
+  });
+}
+
+function fecharResult() {
+  document.getElementById('resultOverlay').classList.remove('show');
+}
+
+// ── COPIAR / SALVAR ────────────────────────────────────────────
+async function copiarTicket() {
+  if (!currentTxt) { toast('Gere um ticket primeiro', 'warn'); return; }
+  await CB.copiar({ texto: currentTxt, user: prefs.emitente_nome });
+  toast('📋 Copiado para área de transferência', 'ok');
+}
+
+async function salvarTicket() {
+  if (!currentTxt) { toast('Gere um ticket primeiro', 'warn'); return; }
+  const r = await CB.salvar({ texto: currentTxt, filename: currentFn, user: prefs.emitente_nome });
+  if (r.ok) toast(`💾 Salvo: ${r.filePath}`, 'ok');
+  else if (r.error) toast(`Erro: ${r.error}`, 'err');
+}
+
+// ── RESET FORM ─────────────────────────────────────────────────
+function resetForm() {
+  FORM_FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.classList.remove('ai-filled'); }
+  });
+  document.getElementById('aiBadge').classList.remove('show');
+  ['moduloHint','versaoHint'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+  document.getElementById('btnCopiar').disabled = true;
+  document.getElementById('btnSalvar').disabled = true;
+  document.getElementById('btnFormalizar').disabled = !aiOk;
+  currentTxt = null; currentFn = null; hints = {};
+  document.getElementById('draftBar').classList.remove('show');
+  CB.draftClear();
+  toast('Formulário limpo', 'info');
+  document.getElementById('contato').focus();
+}
+
+// ── HISTORY ────────────────────────────────────────────────────
+async function loadHistory() {
+  try {
+    const list = await CB.ticketsGet(100);
+    renderHistory(list);
+    document.getElementById('histBadge').textContent = list.length;
+  } catch {}
+}
+
+async function updateHistCount() {
+  try {
+    const list = await CB.ticketsGet(500);
+    document.getElementById('histBadge').textContent = list.length;
+  } catch {}
+}
+
+function renderHistory(list) {
+  const grid = document.getElementById('histGrid');
+  if (!list || !list.length) {
+    grid.innerHTML = `<div class="empty-state"><div>📭</div><div>NENHUM TICKET GERADO</div></div>`;
+    return;
+  }
+  grid.innerHTML = list.map(t => {
+    const dt = new Date(t.timestamp).toLocaleString('pt-BR');
+    const aiLbl = t.aiUsed ? '✦ AI' : '◌ LOCAL';
+    const aiCls = t.aiUsed ? 'ai' : 'local';
+    return `<div class="hist-card">
+      <div class="hc-top">
+        <span class="hc-id">${t.id}</span>
+        <span class="hc-dt">${dt}</span>
+      </div>
+      <div class="hc-cli">${t.cliente || '—'}</div>
+      <div class="hc-lic">LIC: ${t.licenca||'—'}  ·  CNPJ: ${t.cnpj||'—'}</div>
+      <div class="hc-tags">
+        <span class="htag ${aiCls}">${aiLbl}</span>
+        ${t.modulo ? `<span class="htag mod">${t.modulo}</span>` : ''}
+        ${t.versao  ? `<span class="htag">v${t.versao}</span>` : ''}
+        <span class="hc-emit">${t.emitente||'—'}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── AUDIT ──────────────────────────────────────────────────────
+async function loadAudit() {
+  try {
+    const data = await CB.auditGet(300);
+    auditData = data;
+    renderAudit();
+  } catch {}
+}
+
+function filterAudit(f, btn) {
+  auditFilter = f;
+  document.querySelectorAll('.af-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAudit();
+}
+
+function renderAudit() {
+  const tbody = document.getElementById('auditBody');
+  let data = auditData;
+  if (auditFilter !== 'all') {
+    const map = { ticket:['TICKET'], ai:['AI'], app:['APP','PREFS'] };
+    const pref = map[auditFilter] || [];
+    data = data.filter(e => pref.some(p => e.action.startsWith(p)));
+  }
+  if (!data.length) {
+    tbody.innerHTML = `<div class="empty-state"><div>NENHUM EVENTO</div></div>`;
+    return;
+  }
+  tbody.innerHTML = data.map(e => {
+    const ts  = new Date(e.timestamp).toLocaleString('pt-BR');
+    const tag = getEventTag(e.action);
+    const det = Object.keys(e.details||{}).map(k=>`${k}:${e.details[k]}`).join(' · ') || '—';
+    return `<div class="audit-row">
+      <span class="ar-ts">${ts}</span>
+      <span><span class="etag ${tag.cls}">${tag.label}</span></span>
+      <span class="ar-user">${e.user||'—'}</span>
+      <span class="ar-id">${e.id}</span>
+    </div>`;
+  }).join('');
+}
+
+function getEventTag(action) {
+  if (action.startsWith('TICKET')) return { cls:'etag-ticket', label: action.replace('TICKET_','') };
+  if (action.startsWith('AI'))     return { cls:'etag-ai',     label: action };
+  if (action.startsWith('PREFS'))  return { cls:'etag-prefs',  label: action.replace('PREFS_','') };
+  if (action.startsWith('APP'))    return { cls:'etag-app',    label: action.replace('APP_','') };
+  return { cls:'etag-sys', label: action };
+}
+
+// ── TOAST ──────────────────────────────────────────────────────
+function toast(msg, type='info') {
+  const cls  = { ok:'toast-ok', err:'toast-err', warn:'toast-warn', info:'toast-info' }[type]||'toast-info';
+  const el   = document.createElement('div');
+  el.className = `toast ${cls}`;
+  el.textContent = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => { el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 2800);
+}
+</script>
+</body>
+</html>

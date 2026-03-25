@@ -1,0 +1,34 @@
+{
+  "name": "clicbiz-ticket-master",
+  "version": "1.0.0",
+  "description": "Clicbiz Ticket Generator — Master v1.0 | Gabriel Perdigão",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build-win": "electron-builder --win portable --x64"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.clicbiz.ticket.master",
+    "productName": "Clicbiz Ticket Master",
+    "copyright": "Gabriel Perdigão — Clicbiz",
+    "win": {
+      "target": [{ "target": "portable", "arch": ["x64"] }],
+      "icon": "src/icon.ico"
+    },
+    "portable": {
+      "artifactName": "ClicbizTicket_Master_v1.exe"
+    },
+    "files": ["src/**/*"],
+    "asar": true,
+    "compression": "maximum"
+  },
+  "author": "Gabriel Perdigão — Clicbiz",
+  "license": "UNLICENSED"
+}
